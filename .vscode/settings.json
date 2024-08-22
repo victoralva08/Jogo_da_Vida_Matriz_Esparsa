@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "automatocelular.h": "c",
-        "automato.h": "c"
+        "automato.h": "c",
+        "matriz.h": "c"
     }
 }

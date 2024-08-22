@@ -1,115 +1,48 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "automato.h"
 
-void lerQuantidades(int *tam, int *geracoes) 
-{
-    scanf("%d %d", tam, geracoes);
-}
+typedef struct automatoCelular {
+    MatrizEsparsa * automato;
+    MatrizEsparsa * automatoAuxiliar;
+} AutomatoCelular;
 
-int ** alocarReticulado(int tam) 
-{
-    int ** matriz = (int **) malloc(sizeof(int*) * tam);
+AutomatoCelular * alocarReticulado() {
+    int dimensao;
+    scanf("%d", &dimensao);
 
-    if(matriz == NULL) {
-        printf("Memoria insuficiente!\n");
+    AutomatoCelular *new = (AutomatoCelular*) malloc(sizeof(AutomatoCelular));
+
+    if(new == NULL) {
+        printf("Não há memória suficiente.\n");
         exit(1);
     }
 
-    for (int i = 0; i < tam; i++) {
-        matriz[i] = malloc(sizeof(int) * tam);
+    new->automato = alocaMatrizEsparsa(dimensao);
+    new->automatoAuxiliar = alocaMatrizEsparsa(dimensao);
 
-        if (matriz[i] == NULL) {
+    iniciaListas(new->automato);
+    iniciaListas(new->automatoAuxiliar);
 
-            for(int j = 0; j < i; j++)
-                free(matriz[j]);
+    return new;
+}
 
-            free(matriz);
+AutomatoCelular * desalocarReticulado(AutomatoCelular ** automato) {
+    (*automato)->automato = desalocaMatrizEsparsa((*automato)->automato);
+    (*automato)->automatoAuxiliar = desalocaMatrizEsparsa((*automato)->automatoAuxiliar);
+    free(*automato);
+    return NULL;
+}
 
-            printf("Memoria insuficiente!\n");
-            exit(1);
+void leituraReticulado(AutomatoCelular * automato) {
+    leituraDaMatriz(automato->automato);
+}
 
-        }
+void evoluirReticulado(AutomatoCelular *automato, int geracoes) {
+    while(geracoes > 0) {
+        evoluirMatriz(&automato->automato, &automato->automatoAuxiliar);
+        geracoes--;
     }
-
-    return matriz;
 }
 
-void desalocarReticulado(int **automato, int tam)
-{
-    for (int i = 0; i < tam; i++)
-        free(automato[i]);
-    free(automato);
-}
-
-void leituraReticulado(int **automato, int tam)
-{
-    for (int i = 0; i < tam; i++)
-        for (int j = 0; j < tam; j++)
-            scanf("%d", &automato[i][j]);
-}
-
-void evoluirReticulado(int **automato, int **matrizAuxiliar, int geracoes, int tam, int cont)
-{
-    for (int linha = 0; linha < tam; linha++) {
-        for (int coluna = 0; coluna < tam; coluna++) { // iterando pelos elementos da matriz
-            
-            cont = 0;
-
-            for (int k = linha - 1; k <= linha + 1; k++) {
-
-                if (k >= 0 && k < tam) { // verifica se k esta dentro dos limites de dimensão da matriz
-
-                    for (int l = coluna - 1; l <= coluna + 1; l++) {
-
-                        if (l >= 0 && l < tam) { // verifica se l esta dentro dos limites de dimensão da matriz
-                            if (automato[k][l] == 1) {
-                                cont++;
-                            }
-                        }
-
-                    }
-
-                }
-
-            }
-
-            if (automato[linha][coluna] == 1) { // caso a celula esteja viva
-
-                cont--; /* subtrai de cont a contagem da propria celula, pois so importam as celulas adjacentes */
-
-                if (cont == 2 || cont == 3) {
-                    matrizAuxiliar[linha][coluna] = 1;
-                } else {
-                    matrizAuxiliar[linha][coluna] = 0;
-                }
-            } else { // caso a celula esteja morta
-                if (cont == 3) {
-                    matrizAuxiliar[linha][coluna] = 1;
-                } else {
-                    matrizAuxiliar[linha][coluna] = 0;
-                }
-            }
-
-        }
-    }
-
-    /* atribuicao dos elementos da matrizAuxiliar para o automato principal */
-    for (int i = 0; i < tam; i++) 
-        for (int j = 0; j < tam; j++)    
-            automato[i][j] = matrizAuxiliar[i][j];
-
-    geracoes--;
-
-    if (geracoes != 0) /* enquanto nao alcancar a geracao zero, a funcao chamara a si mesmo recurssivamente */
-        evoluirReticulado(automato, matrizAuxiliar, geracoes, tam, cont);
-}
-
-void imprimeReticulado(int **automato, int tam)
-{
-    for (int i = 0; i < tam; i++) {
-        for (int j = 0; j < tam; j++)
-            printf("%d ", automato[i][j]);
-        printf("\n");
-    }
+void imprimeReticulado(AutomatoCelular * automato) {
+    imprimeMatriz(automato->automato);
 }

@@ -1,16 +1,19 @@
+#include <stdio.h>
+#include "matriz.h"
+
 #ifndef automatoCelular_h
 #define automatoCelular_h
 
-void lerQuantidades(int *, int *);
+typedef struct automatoCelular AutomatoCelular;
 
-int ** alocarReticulado(int);
+AutomatoCelular * alocarReticulado() ;
 
-void desalocarReticulado(int **, int);
+AutomatoCelular * desalocarReticulado(AutomatoCelular ** automato);
 
-void leituraReticulado(int **, int);
+void leituraReticulado(AutomatoCelular * automato);
 
-void evoluirReticulado(int **, int **, int, int, int);
+void evoluirReticulado(AutomatoCelular *automato, int geracoes);
 
-void imprimeReticulado(int **, int);
+void imprimeReticulado(AutomatoCelular * automato) ;
 
 #endif

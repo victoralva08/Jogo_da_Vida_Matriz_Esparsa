@@ -1,16 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
+/* Victor Ferreira Alvarenga */
+
 #include "matriz.h"
+#include "automato.h"
 
 int main() {
+    int geracoes;
+    AutomatoCelular * automato;
 
-    int dimensao;
-    MatrizEsparsa *matriz;
-    scanf("%d", &dimensao);
+    automato = alocarReticulado();
+    scanf("%d", &geracoes);
+    
+    leituraReticulado(automato);
 
-    matriz = alocaMatrizEsparsa(dimensao);
+    evoluirReticulado(automato, geracoes);
 
-    matriz = desalocaMatrizEsparsa(matriz);
+    imprimeReticulado(automato);
 
+    automato = desalocarReticulado(&automato);
+    
     return 0;
 }
